@@ -1,0 +1,6 @@
+# Ignore all cloned repositories in src/
+# Each subdirectory here is an external repo clone — do not track them
+*
+
+# But allow this .gitignore itself to be tracked
+!.gitignore

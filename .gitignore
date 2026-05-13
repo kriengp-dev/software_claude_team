@@ -54,9 +54,6 @@ dkms.conf
 # debug information files
 *.dwo
 
-# Research and generated output
-output/
-
 # Runtime activity log
 .claude/activity.log
 log/
