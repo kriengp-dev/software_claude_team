@@ -12,6 +12,22 @@ origin: ECC
 
 ---
 
+## Step 0 — Git Repo Discovery (Mandatory First Step)
+
+Before any `git add` or `git commit`, resolve the correct repository root:
+
+```bash
+git -C "<path-of-changed-files>" rev-parse --show-toplevel
+```
+
+**Rules:**
+- Use the printed path for all subsequent git commands — not `pwd`, not the Claude project root
+- If the command returns an error → STOP and ask the user which repo to commit to
+- **Never run `git init`** unless the user explicitly requests it in the current message
+- The Claude project repo (`software_claude_team`) is NOT the target — always find the project's own repo
+
+---
+
 ## Branch Rules
 
 **Never commit directly to `main` or `master`.** This is enforced by a `PreToolUse` hook that blocks all `git commit` commands when the current branch is `main` or `master`.

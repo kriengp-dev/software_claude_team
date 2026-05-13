@@ -29,12 +29,16 @@ Launch **dotnet-analyzer** agent on the target repo:
 
 #### 0b — NuGet / External Package Search
 
-Search for proven .NET libraries before writing from scratch:
+Search for proven .NET libraries before writing from scratch.
+
+Use `dotnet tool search <keyword>` for CLI tools. For packages, use WebSearch targeting `site:nuget.org <keyword>` — the `dotnet search` command does not exist and will fail.
 
 ```bash
-# Check NuGet for existing packages
-dotnet search <keyword>
-# or search https://www.nuget.org
+# Tools only
+dotnet tool search <keyword>
+
+# Packages — use WebSearch instead:
+# Query: site:nuget.org <keyword> .NET
 ```
 
 Look for:
@@ -77,7 +81,14 @@ The plan must include all 5 sections:
 
 After the plan file is written:
 
-1. **Invoke `Skill: git-commit`** — branch rules, commit message format
+1. Resolve the project git repo root:
+   ```bash
+   git -C "<TARGET_REPO>" rev-parse --show-toplevel
+   ```
+   Commit goes to **this repo**, not the Claude project repo.
+   If no repo found — STOP and ask the user which repo to use. Never run `git init`.
+
+2. **Invoke `Skill: git-commit`** — branch rules, commit message format
 
 ---
 

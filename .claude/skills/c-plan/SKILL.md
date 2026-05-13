@@ -173,7 +173,14 @@ Save all documents as sections within a single file:
 
 After the plan file is written, invoke before committing:
 
-1. **Invoke `Skill: git-commit`** — branch rules, commit message format, PR process
+1. Resolve the project git repo root:
+   ```bash
+   git -C "<TARGET_REPO>" rev-parse --show-toplevel
+   ```
+   Commit goes to **this repo**, not the Claude project repo.
+   If no repo found — STOP and ask the user which repo to use. Never run `git init`.
+
+2. **Invoke `Skill: git-commit`** — branch rules, commit message format, PR process
 
 ---
 
