@@ -44,11 +44,17 @@ Launch **c-developer** agent with:
 
 ## Mandatory Skills Gate (Pre-Commit)
 
-After the agent completes and before any commit, invoke all three skills in order:
+After the agent completes and before any commit, invoke in order:
 
 1. **Invoke `Skill: c-coding-standard`** — on every `.c`/`.h` file written or modified
 2. **Invoke `Skill: c-doxygen-standard`** — on every `.c`/`.h` file written or modified
-3. **Invoke `Skill: git-commit`** — branch rules, commit message format, PR process
+3. Resolve the project git repo root:
+   ```bash
+   git -C "<TARGET_REPO>" rev-parse --show-toplevel
+   ```
+   Commit goes to **this repo**, not the Claude project repo.
+   If no repo found — STOP and ask the user which repo to use. Never run `git init`.
+4. **Invoke `Skill: git-commit`** — branch rules, commit message format, PR process
 
 ---
 

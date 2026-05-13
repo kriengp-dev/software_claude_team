@@ -25,6 +25,15 @@ Launch **c-reviewer** agent with:
 
 ---
 
+## Re-review Rule (CRITICAL)
+
+If the c-reviewer agent finds and fixes CRITICAL or HIGH issues:
+- **Launch a NEW c-reviewer agent** to confirm the fixes — the agent that applied the fixes must not verify its own work
+- The new agent must re-run `cppcheck`, the project build, and re-read every fixed file
+- Only when the new agent reports no CRITICAL or HIGH issues may the workflow proceed
+
+---
+
 ## What the Agent Reviews
 
 ### Section 1 — Code Review (mandatory)
@@ -49,11 +58,17 @@ Launch **c-reviewer** agent with:
 
 ## Mandatory Skills Gate (Pre-Commit)
 
-After the agent completes its review and any fixes are applied, invoke all three skills in order:
+After the agent completes its review and any fixes are applied, invoke in order:
 
 1. **Invoke `Skill: c-coding-standard`** — on every `.c`/`.h` file modified during review
 2. **Invoke `Skill: c-doxygen-standard`** — on every `.c`/`.h` file modified during review
-3. **Invoke `Skill: git-commit`** — branch rules, commit message format, PR process
+3. Resolve the project git repo root:
+   ```bash
+   git -C "<TARGET_REPO>" rev-parse --show-toplevel
+   ```
+   Commit goes to **this repo**, not the Claude project repo.
+   If no repo found — STOP and ask the user which repo to use. Never run `git init`.
+4. **Invoke `Skill: git-commit`** — branch rules, commit message format, PR process
 
 ---
 

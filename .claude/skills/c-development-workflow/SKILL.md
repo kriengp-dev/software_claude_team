@@ -27,6 +27,55 @@ Store as `<MODE>`. Do not ask again during the workflow.
 
 ---
 
+## Pre-execution Setup (Mandatory — do before Phase 1)
+
+### A — Resolve Git Repo Root
+
+Run this once and store as `<GIT_REPO_ROOT>`:
+
+```bash
+git -C "<TARGET_REPO>" rev-parse --show-toplevel
+```
+
+**Rules:**
+- If the command succeeds → use the printed path as `<GIT_REPO_ROOT>` for all git operations in this workflow
+- If it fails (no repo found) → STOP and ask the user which git repository to use
+- **Never run `git init`** unless the user explicitly requests it
+
+All commits in this workflow go to `<GIT_REPO_ROOT>`, not the Claude project repo.
+
+### B — Create TodoWrite Task List
+
+Before launching any agent, create a todo list covering every phase and gate:
+
+```
+[ ] Phase 1 — Plan
+    [ ] 0a: deep-research-specialist launched
+    [ ] 0b: GitHub code search complete
+    [ ] 0c: c-analyser complete
+    [ ] Reuse decision documented
+    [ ] 1: plan file exists on disk at <TARGET_REPO>/doc/
+    [ ] GATE: plan committed to <GIT_REPO_ROOT> ← MUST be done before Phase 2
+
+[ ] Phase 2 — Implement
+    [ ] c-developer complete (TDD or Code)
+    [ ] c-coding-standard applied
+    [ ] c-doxygen-standard applied
+    [ ] GATE: implementation committed to <GIT_REPO_ROOT> ← MUST be done before Phase 3
+
+[ ] Phase 3 — Review
+    [ ] c-reviewer pass 1 complete
+    [ ] if CRITICAL/HIGH found: fixes applied + NEW c-reviewer pass launched
+    [ ] no CRITICAL/HIGH remaining
+    [ ] c-coding-standard applied to fixed files
+    [ ] c-doxygen-standard applied to fixed files
+    [ ] GATE: fix commits committed to <GIT_REPO_ROOT>
+```
+
+Mark each item done immediately when completed. **Do not proceed to the next phase until the current phase's GATE item is checked.**
+
+---
+
 ## Phase 1 — Plan
 
 **Must complete before Phase 2 starts.**
@@ -40,9 +89,10 @@ The skill will:
 
 **Output:** `<TARGET_REPO>/doc/plan_<feature-name>.md` containing PRD, Architecture, System Design, API Contract, and Task List.
 
-**Skills gate (inside c-plan):** `Skill: git-commit`
+**Skills gate (inside c-plan):** `Skill: git-commit` (commit to `<GIT_REPO_ROOT>`)
 
-Do not proceed to Phase 2 until the plan file exists and has been committed.
+**STOP — do not proceed to Phase 2 until the plan file is committed.**
+If the commit fails for any reason, stop and ask the user how to proceed. Never silently skip this gate.
 
 ---
 
@@ -64,9 +114,10 @@ Invoke **`Skill: c-coding`** with:
 - Plan file path: `<TARGET_REPO>/doc/plan_<feature-name>.md`
 - The c-developer agent follows the plan (Case A) and implements directly
 
-**Skills gate (inside c-tdd / c-coding):** `Skill: c-coding-standard` → `Skill: c-doxygen-standard` → `Skill: git-commit`
+**Skills gate (inside c-tdd / c-coding):** `Skill: c-coding-standard` → `Skill: c-doxygen-standard` → `Skill: git-commit` (commit to `<GIT_REPO_ROOT>`)
 
-Do not proceed to Phase 3 until implementation is committed and all tests pass.
+**STOP — do not proceed to Phase 3 until implementation is committed and all tests pass.**
+If the commit fails for any reason, stop and ask the user how to proceed. Never silently skip this gate.
 
 ---
 
@@ -85,7 +136,7 @@ The skill will:
 
 - c-reviewer reports the blocking issues
 - Invoke **`Skill: c-coding`** to fix the issues (pass the review findings as input)
-- Invoke **`Skill: c-review`** again to confirm resolution
+- **Invoke `Skill: c-review` again with a NEW agent** — the agent that applied fixes must not verify its own work
 - Repeat until no CRITICAL or HIGH issues remain
 
 ### If review passes (no CRITICAL or HIGH)
