@@ -30,12 +30,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/guard_main_branch.py",
+            "command": "python C:/Users/krien/github/software_claude_team/.claude/hooks/guard_main_branch.py",
             "statusMessage": "Checking branch protection..."
           },
           {
             "type": "command",
-            "command": "python .claude/hooks/validate_commit_msg.py",
+            "command": "python C:/Users/krien/github/software_claude_team/.claude/hooks/validate_commit_msg.py",
             "statusMessage": "Validating commit message format..."
           }
         ]
@@ -45,12 +45,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/guard_main_branch.py",
+            "command": "python C:/Users/krien/github/software_claude_team/.claude/hooks/guard_main_branch.py",
             "statusMessage": "Checking branch protection..."
           },
           {
             "type": "command",
-            "command": "python .claude/hooks/validate_commit_msg.py",
+            "command": "python C:/Users/krien/github/software_claude_team/.claude/hooks/validate_commit_msg.py",
             "statusMessage": "Validating commit message format..."
           }
         ]
