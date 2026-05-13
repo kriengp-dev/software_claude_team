@@ -52,22 +52,22 @@ Before writing any tests, auto-check required tools. For any missing tool, insta
 
 ```bash
 # Check Chocolatey
-choco --version 2>nul || echo "Chocolatey not found — install from https://chocolatey.org/install"
+choco --version 2>/dev/null || echo "Chocolatey not found — install from https://chocolatey.org/install"
 
 # GCC (MinGW-w64) — required
-gcc --version 2>nul || choco install mingw -y
+gcc --version 2>/dev/null || choco install mingw -y
 
 # CMake — required if using CMake build
-cmake --version 2>nul || choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
+cmake --version 2>/dev/null || choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y
 
 # mingw32-make — required if using Makefile
-mingw32-make --version 2>nul || echo "Included with MinGW — re-check PATH after MinGW install"
+mingw32-make --version 2>/dev/null || echo "Included with MinGW — re-check PATH after MinGW install"
 
 # gcov — coverage (included with GCC)
-gcov --version 2>nul || echo "gcov missing — available after GCC install"
+gcov --version 2>/dev/null || echo "gcov missing — available after GCC install"
 
 # OpenCppCoverage — HTML coverage report (optional, Windows lcov alternative)
-OpenCppCoverage --version 2>nul || choco install opencppcoverage -y
+OpenCppCoverage --version 2>/dev/null || choco install opencppcoverage -y
 ```
 
 | Tool | Required | Purpose |

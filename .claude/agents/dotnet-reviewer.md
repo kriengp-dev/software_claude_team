@@ -164,4 +164,4 @@ subagent: dotnet-reviewer
 <optional body>
 ```
 
-Valid types: `fix`, `refactor`, `chore`
+Valid types: `fix`, `refactor`, `chore`, `docs`

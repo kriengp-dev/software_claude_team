@@ -77,6 +77,25 @@ def validate(msg: str) -> list:
             '  Correct: feat: add driver\\nsubagent: c-developer'
         )
 
+    # Rule 3: subagent: or author: must be present somewhere in the body
+    body_lines = lines[1:]
+    has_subagent = any(
+        re.match(r'^subagent\s*:', line.strip(), re.IGNORECASE)
+        for line in body_lines
+    )
+    has_author = any(
+        re.match(r'^author\s*:', line.strip(), re.IGNORECASE)
+        for line in body_lines
+    )
+    if subject and not has_subagent and not has_author:
+        errors.append(
+            '"subagent:" line is missing from the commit body.\n'
+            '  Add it on a new line after the subject:\n'
+            '    feat: add driver\n'
+            '    subagent: c-developer\n'
+            '  For human commits use: author: <name>'
+        )
+
     return errors
 
 
