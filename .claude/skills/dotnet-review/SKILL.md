@@ -24,6 +24,15 @@ Launch **dotnet-reviewer** agent with:
 
 ---
 
+## Re-review Rule (CRITICAL)
+
+If the dotnet-reviewer agent finds and fixes CRITICAL or HIGH issues:
+- **Launch a NEW dotnet-reviewer agent** to confirm the fixes — the agent that applied the fixes must not verify its own work
+- The new agent must run `dotnet build` and re-read every fixed file
+- Only when the new agent reports no CRITICAL or HIGH issues may the workflow proceed
+
+---
+
 ## What the Agent Reviews
 
 ### Review Priorities

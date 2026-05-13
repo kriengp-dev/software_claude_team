@@ -72,11 +72,22 @@ Launch **dotnet-frontend-developer** agent with:
 
 ## Mandatory Skills Gate (Pre-Commit)
 
-After each agent completes, invoke in order:
+After each agent completes, execute in order — document each result explicitly:
 
-1. Run `dotnet format <TARGET_REPO>` — style enforcement
-2. Verify XML doc comments on all public APIs and components
-3. **Invoke `Skill: git-commit`** — branch rules, commit message format
+1. **`dotnet format <TARGET_REPO>`** — must produce no output (clean). If output appears, re-run `dotnet build` to verify no errors were introduced.
+
+2. **`dotnet test <TARGET_REPO>`**
+   - If test project exists: all tests must pass before proceeding
+   - If no test project found: document "no test project — skipped" and proceed
+
+3. **XML doc comments** — check whether the project uses XML docs:
+   ```bash
+   grep -r "/// <summary>" <TARGET_REPO>/
+   ```
+   - If found: all new public APIs and components must have `<summary>` tags
+   - If none found in existing code: document "project convention: no XML docs — skipped" and proceed
+
+4. **Invoke `Skill: git-commit`** — branch rules, commit message format. Commit goes to the project's own git repo (resolved via `git -C <TARGET_REPO> rev-parse --show-toplevel`), not the Claude project repo.
 
 ---
 

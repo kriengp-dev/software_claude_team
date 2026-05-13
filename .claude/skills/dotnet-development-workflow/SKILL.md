@@ -31,6 +31,54 @@ Store as `<SCOPE>` and `<MIGRATION>`.
 
 ---
 
+## Pre-execution Setup (Mandatory — do before Phase 1)
+
+### A — Resolve Git Repo Root
+
+Run this once and store as `<GIT_REPO_ROOT>`:
+
+```bash
+git -C "<TARGET_REPO>" rev-parse --show-toplevel
+```
+
+**Rules:**
+- If the command succeeds → use the printed path as `<GIT_REPO_ROOT>` for all git operations in this workflow
+- If it fails (no repo found) → STOP and ask the user which git repository to use
+- **Never run `git init`** unless the user explicitly requests it
+
+All commits in this workflow go to `<GIT_REPO_ROOT>`, not the Claude project repo.
+
+### B — Create TodoWrite Task List
+
+Before launching any agent, create a todo list covering every phase and gate:
+
+```
+[ ] Phase 1 — Plan
+    [ ] 0a: dotnet-analyzer launched
+    [ ] 0b: NuGet search complete
+    [ ] 0c: Reuse decision documented
+    [ ] 1: plan file exists on disk at <TARGET_REPO>/doc/
+    [ ] GATE: plan committed to <GIT_REPO_ROOT> ← MUST be done before Phase 2
+
+[ ] Phase 2 — Implement
+    [ ] dotnet-backend-developer / dotnet-frontend-developer complete
+    [ ] dotnet format — clean (no output)
+    [ ] dotnet test — passed (or "no test project" documented)
+    [ ] XML docs — verified (or "project uses no XML docs" documented)
+    [ ] GATE: implementation committed to <GIT_REPO_ROOT> ← MUST be done before Phase 3
+
+[ ] Phase 3 — Review
+    [ ] dotnet-reviewer pass 1 complete
+    [ ] if CRITICAL/HIGH found: fixes applied + NEW dotnet-reviewer pass launched
+    [ ] no CRITICAL/HIGH remaining
+    [ ] dotnet format --verify-no-changes — clean
+    [ ] GATE: fix commits committed to <GIT_REPO_ROOT>
+```
+
+Mark each item done immediately when completed. **Do not proceed to the next phase until the current phase's GATE item is checked.**
+
+---
+
 ## Phase 1 — Plan
 
 **Must complete before Phase 2.**
@@ -44,9 +92,10 @@ The skill will:
 
 **Output:** `<TARGET_REPO>/doc/plan_<feature-name>.md`
 
-**Skills gate:** `Skill: git-commit`
+**Skills gate:** `Skill: git-commit` (commit to `<GIT_REPO_ROOT>`)
 
-Do not proceed to Phase 2 until the plan file is committed.
+**STOP — do not proceed to Phase 2 until the plan file is committed.**
+If the commit fails for any reason, stop and ask the user how to proceed. Never silently skip this gate.
 
 ---
 
@@ -68,9 +117,10 @@ Invoke **`Skill: dotnet-coding`** with:
 | Both (A) — independent tasks | Launch **both agents in parallel** |
 | Both (A) — frontend needs backend types | Backend first → then frontend |
 
-**Skills gate (inside dotnet-coding):** `dotnet format` → XML docs → `Skill: git-commit`
+**Skills gate (inside dotnet-coding):** `dotnet format` → `dotnet test` → XML docs → `Skill: git-commit` (commit to `<GIT_REPO_ROOT>`)
 
-Do not proceed to Phase 3 until all implementation is committed and `dotnet test` passes.
+**STOP — do not proceed to Phase 3 until all implementation is committed.**
+If the commit fails for any reason, stop and ask the user how to proceed. Never silently skip this gate.
 
 ---
 
@@ -88,12 +138,12 @@ The dotnet-reviewer agent:
 ### If Review Finds CRITICAL or HIGH Issues
 
 1. Invoke **`Skill: dotnet-coding`** (backend or frontend agent as appropriate) to fix
-2. Invoke **`Skill: dotnet-review`** again to confirm resolution
+2. **Invoke `Skill: dotnet-review` again with a NEW agent** — the agent that applied fixes must not verify its own work
 3. Repeat until no CRITICAL or HIGH issues remain
 
 ### If Review Passes
 
-**Skills gate:** `dotnet format` → XML docs → `Skill: git-commit`
+**Skills gate:** `dotnet format --verify-no-changes` → `Skill: git-commit` (commit to `<GIT_REPO_ROOT>`)
 
 ---
 
