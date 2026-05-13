@@ -17,8 +17,8 @@ origin: ECC
 Before applying any Doxygen comments, ask the user:
 
 ```
-@author に記載される名前を教えてください。
-(例: Tanaka Kenji / K. Tanaka / NDR開発チーム)
+What name should appear in @author?
+(e.g. John Smith / J. Smith / NDR Dev Team)
 ```
 
 **Wait for the answer.** Store it as `AUTHOR_NAME` and use it in every file header.

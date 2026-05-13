@@ -73,8 +73,14 @@ subagent: <agent>
 | c-build-resolver | `c-build-resolver` |
 | c-analyser | `c-analyser` |
 | c-planner | `c-planner` |
-| docs-lookup | `docs-lookup` |
+| dotnet-backend-developer | `dotnet-backend-developer` |
+| dotnet-frontend-developer | `dotnet-frontend-developer` |
+| dotnet-reviewer | `dotnet-reviewer` |
+| dotnet-planner | `dotnet-planner` |
+| dotnet-analyzer | `dotnet-analyzer` |
+| dotnet-build-resolver | `dotnet-build-resolver` |
 | deep-research-specialist | `research` |
+| document-writer | `document-writer` |
 | Human / user | ask user for name → `author: <name>` (omit line if declined) |
 
 **Examples:**
@@ -149,4 +155,4 @@ feat: add holding register read, tests, and docs
 - [ ] Commit contains only one type of change (docs, code, or test — not mixed)
 - [ ] Commit message follows `<type>: <description>` format
 - [ ] All tests pass before committing implementation code
-- [ ] `/c-coding-standard` and `/doxygen-pattern` applied before committing C files
+- [ ] `/c-coding-standard` and `/c-doxygen-standard` applied before committing C files

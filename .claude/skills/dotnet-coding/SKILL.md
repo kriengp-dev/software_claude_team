@@ -11,9 +11,11 @@ description: .NET implementation workflow. Delegates frontend work to dotnet-fro
 
 ---
 
-## Pre-flight: Ask Once Before Starting
+## Pre-flight: Determine Scope
 
-Before launching any agent, ask:
+If `<SCOPE>` was passed as input (e.g. from `dotnet-development-workflow`), use it directly — do not ask again.
+
+Otherwise ask once:
 
 ```
 Does this feature require:

@@ -31,19 +31,19 @@ Use this agent when the user asks to:
 If the user has not provided a target path or module name, ask:
 
 ```
-📌 解析対象を教えてください
+Target clarification — please provide:
 
-1. 解析するディレクトリまたはファイルパスは？
-   (例: src/drivers/, src/app/main.c)
+1. Directory or file path to analyse?
+   (e.g. src/drivers/, src/app/main.c)
 
-2. 特に注目したい点はありますか？
-   - 割り込み / ISR マッピング
-   - 特定モジュールのコールチェーン
-   - 未使用コードの洗い出し
-   - その他
+2. Focus area? (select one or more)
+   - Interrupt / ISR mapping
+   - Call chain for a specific module
+   - Unused code identification
+   - Other (describe)
 
-3. 出力レポートのファイル名を指定しますか？
-   (省略時: doc/analysis_<timestamp>.md  → target repo 内に保存)
+3. Custom report filename?
+   (default: doc/analysis_<timestamp>.md inside the target repo)
 ```
 
 ### Step 1 — Discover Files
