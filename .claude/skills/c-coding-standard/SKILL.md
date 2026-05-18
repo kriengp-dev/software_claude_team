@@ -194,7 +194,33 @@ Every `.h` file must follow this order:
       default:            handle_error();   break;
   }
   ```
-- Prefer early return over deeply nested `if` chains
+- Prefer early return over deeply nested `if` chains — but if the total `return` count would exceed 2, use a result variable with a single exit instead:
+  ```c
+  /* Wrong — three returns */
+  int foo_read(uint32_t *p_val)
+  {
+      if (p_val == NULL) { return FOO_ERR; }
+      if (reg_read(BASE, p_val) != 0) { return FOO_ERR; }
+      return FOO_OK;
+  }
+
+  /* Right — result variable, single exit */
+  int foo_read(uint32_t *p_val)
+  {
+      int ret = FOO_OK;
+
+      if (p_val == NULL)
+      {
+          ret = FOO_ERR;
+      }
+      else if (reg_read(BASE, p_val) != 0)
+      {
+          ret = FOO_ERR;
+      }
+
+      return ret;
+  }
+  ```
 
 ---
 
@@ -291,6 +317,7 @@ Every `.h` file must follow this order:
 - [ ] All variables use standard C types (`int`, `unsigned int`, `unsigned char`, etc.); fixed-width types only when bit-width is a hard hardware/protocol requirement
 - [ ] All magic numbers replaced with named `#define` or `enum` constants
 - [ ] `U`/`UL` suffix used only in `#define` constants — never in code statements, comparisons, or expressions
+- [ ] Functions with more than 2 `return` statements use a result variable and single exit point
 - [ ] All `if`/`else`/`for`/`while` bodies have braces
 - [ ] Opening brace `{` is always on a new line (Allman style) for all block constructs
 - [ ] All `switch` statements have a `default` case
