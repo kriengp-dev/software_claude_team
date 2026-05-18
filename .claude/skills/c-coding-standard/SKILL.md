@@ -99,6 +99,16 @@ Every `.h` file must follow this order:
   ```c
   void foo_write(const unsigned char *data, unsigned int len);
   ```
+- **Write each function call as a single line** — do not split one call across multiple lines:
+  ```c
+  /* Wrong — one call split across lines */
+  (void)reg_32b_write(
+      (uint32_t)(BASE | OFFSET),
+      (uint32_t)value);
+
+  /* Right — one call, one line */
+  (void)reg_32b_write((uint32_t)(BASE | OFFSET), (uint32_t)value);
+  ```
 
 ---
 
@@ -109,7 +119,7 @@ Every `.h` file must follow this order:
 - Use `static` for all file-scope variables and functions not exposed in a header
 - Mark variables shared between ISR and task context as `volatile`:
   ```c
-  static volatile unsigned int s_rx_head = 0U;
+  static volatile unsigned int s_rx_head = 0;
   ```
 - Do not use global mutable variables unless unavoidable; pass state explicitly
 
@@ -126,8 +136,20 @@ Every `.h` file must follow this order:
   #define UART_RX_BUF_SIZE  256U
   if (len > UART_RX_BUF_SIZE) { ... }
   ```
-- Append `U` suffix to unsigned integer literals: `256U`, `0xFFU`
-- Append `UL` for 32-bit unsigned: `0xDEADBEEFUL`
+- Append `U` suffix to unsigned integer literals **in `#define` constants only**: `#define FOO 256U`, `#define MASK 0xFFU`
+- Append `UL` for 32-bit unsigned **in `#define` constants only**: `#define BASE 0xDEADBEEFUL`
+- **Never use `U` or `UL` suffix in code statements, comparisons, or expressions:**
+  ```c
+  /* Wrong — U suffix in code */
+  if (x != 0U) { ... }
+  for (unsigned int i = 0U; i < len; i++) { ... }
+  buf[i] = 0U;
+
+  /* Right — plain integer in code */
+  if (x != 0) { ... }
+  for (unsigned int i = 0; i < len; i++) { ... }
+  buf[i] = 0;
+  ```
 - Macro parameters must be parenthesized; the entire expression must be parenthesized:
   ```c
   #define MIN(a, b)  (((a) < (b)) ? (a) : (b))
@@ -153,9 +175,9 @@ Every `.h` file must follow this order:
       return;
   }
 
-  for (unsigned int i = 0U; i < len; i++)
+  for (unsigned int i = 0; i < len; i++)
   {
-      buf[i] = 0U;
+      buf[i] = 0;
   }
 
   void foo_init(void)
@@ -210,7 +232,7 @@ Every `.h` file must follow this order:
   unsigned int next = (head + 1) % BUF_SIZE;
 
   /* Right — cast ensures no implicit promotion issue */
-  unsigned int next = (unsigned int)((head + 1U) % BUF_SIZE);
+  unsigned int next = (unsigned int)((head + 1) % BUF_SIZE);
   ```
 - Do not use bitwise operators on signed types
 
@@ -236,18 +258,21 @@ Every `.h` file must follow this order:
 - Explain **why**, not what (the code already shows what it does)
 - Use Doxygen `/** */` blocks for all public APIs (see `/doxygen-pattern`)
 - Use `/* */` for inline explanatory comments — never `//` in production embedded code
+- **Inline comments inside a function body must not exceed 2 lines**
+- Keep comments as **short summaries** — do not list value ranges or reproduce register field details
+- Use simple common words — avoid long technical phrases
 - Mark workarounds and hardware quirks clearly:
   ```c
-  /* WORKAROUND: SPI CS must be deasserted for at least 500 ns (datasheet §4.2) */
+  /* WORKAROUND: SPI CS needs 500 ns gap before next transfer */
   ```
 - Wrong vs right:
   ```c
-  /* Wrong — verbose, restates the code, complex sentence */
-  /* This function initializes the UART peripheral by configuring the baud rate
-     generator register and enabling the transmit and receive interrupts. */
+  /* Wrong — verbose, lists values, complex sentence */
+  /* Guard the 16-bit hardware LEN register — reject zero and over-length transfers
+     that exceed the maximum value of 0xFFFF supported by the NUM register. */
 
-  /* Right — simple, short, explains why */
-  /* enable TX/RX interrupts after baud rate is set */
+  /* Right — short summary, simple words */
+  /* reject zero or oversized length */
   ```
 
 ---
@@ -265,6 +290,7 @@ Every `.h` file must follow this order:
 
 - [ ] All variables use standard C types (`int`, `unsigned int`, `unsigned char`, etc.); fixed-width types only when bit-width is a hard hardware/protocol requirement
 - [ ] All magic numbers replaced with named `#define` or `enum` constants
+- [ ] `U`/`UL` suffix used only in `#define` constants — never in code statements, comparisons, or expressions
 - [ ] All `if`/`else`/`for`/`while` bodies have braces
 - [ ] Opening brace `{` is always on a new line (Allman style) for all block constructs
 - [ ] All `switch` statements have a `default` case
@@ -276,4 +302,7 @@ Every `.h` file must follow this order:
 - [ ] Functions are ≤ 50 lines and ≤ 4 levels deep
 - [ ] Every function that can fail returns a status code
 - [ ] Include guard present on every `.h` file
+- [ ] Each function call is written on a single line — not split across multiple lines
 - [ ] All inline comments are in simple, plain English — short words and short sentences
+- [ ] Inline comments inside a function body are at most 2 lines
+- [ ] No value ranges or register field details in comments — summary only
