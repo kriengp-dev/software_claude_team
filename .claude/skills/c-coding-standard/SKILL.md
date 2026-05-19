@@ -95,6 +95,27 @@ Every `.h` file must follow this order:
 - Maximum **5 parameters** per function — group related params into a struct if more are needed
 - Every function must have **one clearly defined purpose**
 - Functions that can fail must return a status code — never ignore error returns
+- **Public API / driver / library functions must validate all parameters at the top of the function body:**
+  - Pointer parameter → check for `NULL`, return an error code immediately
+  - Private `static` functions called only from within the same module are exempt
+  ```c
+  /* Public API — validate every pointer parameter */
+  int uart_read(unsigned char *p_buf, unsigned int len)
+  {
+      if (p_buf == NULL)
+      {
+          return UART_ERR;
+      }
+      /* ... */
+      return UART_OK;
+  }
+
+  /* Private helper — caller is controlled, no validation needed */
+  static void flush_rx_buffer(void)
+  {
+      /* ... */
+  }
+  ```
 - Use `const` on pointer parameters that are not modified:
   ```c
   void foo_write(const unsigned char *data, unsigned int len);
@@ -240,10 +261,13 @@ Every `.h` file must follow this order:
 
 ## 9. Pointers
 
-- Always check pointer parameters for `NULL` before dereferencing:
+- Public API / driver / library functions must check every pointer parameter for `NULL` at the top of the function body — see Section 4
+- Private `static` functions are exempt (their callers are known and controlled)
+- Never dereference a pointer without first confirming it is not `NULL`:
   ```c
-  if (p_cfg == NULL) {
-      return MODULE_ERROR_NULL;
+  if (p_cfg == NULL)
+  {
+      return MODULE_ERR;
   }
   ```
 - Never cast between unrelated pointer types without explicit justification in a comment
@@ -323,7 +347,7 @@ Every `.h` file must follow this order:
 - [ ] All `if`/`else`/`for`/`while` bodies have braces
 - [ ] Opening brace `{` is always on a new line (Allman style) for all block constructs
 - [ ] All `switch` statements have a `default` case
-- [ ] All pointer parameters checked for `NULL` where applicable
+- [ ] All public API / driver / library functions validate pointer parameters for `NULL` at entry
 - [ ] No `malloc`/`free` in bare-metal code
 - [ ] All file-scope non-public symbols are `static`
 - [ ] All variables shared with ISR are `volatile`
