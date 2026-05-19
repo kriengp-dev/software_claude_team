@@ -8,6 +8,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 > **IMPORTANT — Invoke subagents proactively.**
 > Do not wait for the user to name an agent or skill. When the task matches a specialized agent (c-planner, c-developer, c-reviewer, dotnet-planner, etc.), invoke it immediately without asking for permission. If the workflow requires multiple agents, launch them in the correct order (or in parallel where independent) on your own initiative.
 
+> **IMPORTANT — Never ask permission to use agents.**
+> Invoking any subagent (via the Agent tool) requires no user confirmation. Execute immediately. Do not say "I will use X agent" and wait — just call it. This applies to all agents: c-planner, c-developer, c-reviewer, c-build-resolver, dotnet-*, deep-research-specialist, document-writer, and all others.
+
 ## Project Overview
 
 This repository is a **Claude Code team configuration** — a shared workspace that packages specialized agents, skills, rules, and hooks for embedded C and .NET software development workflows.
@@ -123,3 +126,4 @@ Detailed behavioral rules are in `.claude/rules/`:
 | No main commits | Never commit directly to `main`/`master` — always use a feature branch |
 | Reviewer always | `c-reviewer` or `dotnet-reviewer` must run after every code change — no exceptions |
 | Planner first | Use `c-planner` or `dotnet-planner` before implementing any multi-file change |
+| Reference repos — ask first | Paths marked "อ้างอิง" (reference) must not be edited without explicit user permission. Ask before touching them; if approved, delegate to the relevant subagent. |
