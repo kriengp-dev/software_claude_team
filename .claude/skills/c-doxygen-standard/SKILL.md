@@ -41,9 +41,14 @@ Every `.c` and `.h` file must begin with:
  * @brief   <one-line description of what this file contains>
  * @author  <AUTHOR_NAME>
  *
- * <Optional: hardware context, design decisions, timing constraints>
+ * <Optional body: at most 2 lines of hardware context or design note>
  */
 ```
+
+Rules:
+- `@brief` line is one sentence only
+- Optional body must not exceed **2 lines** (`@brief` + body ≤ **3 lines total**)
+- `@note` and `@warning` are each one sentence maximum
 
 ---
 
@@ -53,19 +58,24 @@ Every `.c` and `.h` file must begin with:
 /**
  * @brief   <One-sentence description — start with a verb>
  *
- * <Optional: preconditions, side effects, thread-safety, hardware state>
+ * <Optional: one short sentence on precondition or side effect — omit if obvious>
  *
- * @param[in]     name   Description
- * @param[out]    name   Description (written by this function)
- * @param[in,out] name   Description (read and written)
- * @return              Description; list enum values if applicable.
+ * @param[in]     name   Short description (no value ranges).
+ * @param[out]    name   Short description.
+ * @param[in,out] name   Short description.
+ * @return              Short description.
  *
- * @note    Optional note.
- * @warning Optional warning (e.g. "Not ISR-safe").
+ * @note    One short sentence only.
+ * @warning One short sentence only.
  */
 ```
 
-`@return` is required for every non-`void` function.
+Rules:
+- `@brief` block (including the optional body line) must not exceed **3 lines total**
+- `@param` and `@return` descriptions must be **short** — do not list value ranges or reproduce register details
+- `@note` and `@warning` are each **one sentence** maximum
+- Use simple common words — no long technical phrases
+- `@return` is required for every non-`void` function
 
 ---
 
@@ -106,6 +116,10 @@ typedef enum {
 #define FOO_RX_BUF_SIZE  256U
 ```
 
+Rules:
+- Macro comment must be **single-line** `/** */` only
+- Use simple plain words — no long technical phrases
+
 ---
 
 ### Rule 6 — Private (static) Functions
@@ -113,10 +127,12 @@ typedef enum {
 ```c
 /**
  * @brief   Check whether the RX ring buffer is empty.
- * @return  true if empty, false otherwise.
+ * @return  true if empty, false if not.
  */
 static bool is_rx_empty(void)
 ```
+
+Same length limits as Rule 2 — `@brief` at most 3 lines total, simple words only.
 
 ---
 
@@ -125,6 +141,11 @@ static bool is_rx_empty(void)
 - Do not start `@brief` with "This function..." — use a verb directly
 - Do not use `//` style comments for Doxygen blocks
 - Do not leave any public function without `@brief`
+- Do not list value ranges, register addresses, or field names in `@param`/`@return`
+- Do not write `@brief` blocks longer than 3 lines (applies to functions and file headers)
+- Do not write file header body descriptions longer than 2 lines
+- Do not write macro comments as multi-line blocks — single-line `/** */` only
+- Do not use long technical phrases — keep words simple and sentences short
 
 ---
 
@@ -135,6 +156,10 @@ static bool is_rx_empty(void)
 - [ ] Every public function: `@brief`, `@param[direction]`, `@return` (if non-void)
 - [ ] Every struct: `@brief` + inline `/**<` member comments
 - [ ] Every enum: `@brief` + inline `/**<` value comments
-- [ ] Every `#define`: single-line `/** */` comment
+- [ ] Every `#define`: single-line `/** */` comment only — no multi-line blocks
 - [ ] Private `static` functions: at minimum `@brief`
 - [ ] All `@brief` lines start with a verb
+- [ ] `@brief` block (including optional body) is at most 3 lines — applies to functions and file headers
+- [ ] File header body description is at most 2 lines
+- [ ] `@param` and `@return` are short — no value ranges or register details
+- [ ] Simple words only — no long technical phrases
