@@ -138,17 +138,19 @@ Every `.h` file must follow this order:
   ```
 - Append `U` suffix to unsigned integer literals **in `#define` constants only**: `#define FOO 256U`, `#define MASK 0xFFU`
 - Append `UL` for 32-bit unsigned **in `#define` constants only**: `#define BASE 0xDEADBEEFUL`
-- **Never use `U` or `UL` suffix in code statements, comparisons, or expressions:**
+- **Never use `U` or `UL` suffix in code statements, comparisons, return values, or expressions:**
   ```c
   /* Wrong — U suffix in code */
   if (x != 0U) { ... }
   for (unsigned int i = 0U; i < len; i++) { ... }
   buf[i] = 0U;
+  return 0U;
 
   /* Right — plain integer in code */
   if (x != 0) { ... }
   for (unsigned int i = 0; i < len; i++) { ... }
   buf[i] = 0;
+  return 0;
   ```
 - Macro parameters must be parenthesized; the entire expression must be parenthesized:
   ```c
