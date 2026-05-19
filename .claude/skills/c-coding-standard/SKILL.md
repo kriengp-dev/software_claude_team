@@ -130,6 +130,21 @@ Every `.h` file must follow this order:
   /* Right — one call, one line */
   (void)reg_32b_write((uint32_t)(BASE | OFFSET), (uint32_t)value);
   ```
+- **Never embed a register read/write call inside an `if` condition** — always store the return value in a variable first, then check it:
+  ```c
+  /* Wrong — call embedded in if */
+  if (reg_32b_write((uint32_t)(BASE), value) != 0)
+  {
+      return FOO_ERR;
+  }
+
+  /* Right — store result first, then check */
+  ret = reg_32b_write((uint32_t)(BASE), value);
+  if (ret != 0)
+  {
+      return FOO_ERR;
+  }
+  ```
 
 ---
 
@@ -227,7 +242,7 @@ Every `.h` file must follow this order:
       return FOO_OK;
   }
 
-  /* Right — result variable, single exit */
+  /* Right — result variable, single exit, flat sequential checks */
   int foo_read(uint32_t *p_val)
   {
       int ret = FOO_OK;
@@ -236,7 +251,9 @@ Every `.h` file must follow this order:
       {
           ret = FOO_ERR;
       }
-      else if (reg_read(BASE, p_val) != 0)
+
+      ret = (int)reg_read(BASE, p_val);
+      if (ret != 0)
       {
           ret = FOO_ERR;
       }
@@ -356,6 +373,7 @@ Every `.h` file must follow this order:
 - [ ] Every function that can fail returns a status code
 - [ ] Include guard present on every `.h` file
 - [ ] Each function call is written on a single line — not split across multiple lines
+- [ ] Register read/write return value stored in a variable first — never embedded inside an `if` condition
 - [ ] All inline comments are in simple, plain English — short words and short sentences
 - [ ] Inline comments inside a function body are at most 2 lines
 - [ ] No value ranges or register field details in comments — summary only
